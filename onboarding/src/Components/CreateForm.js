@@ -4,7 +4,10 @@ import { withFormik, Form, Field } from "formik";
 import * as Yup from "yup";
 
 const CreateForm = ({ values, touched, errors, status }) => {
-
+  const [users, setUsers] = useState([])
+  useEffect(() => {
+    status && setUsers(users => [...users, status])
+  }, [status])
   return (
     <div>
       <Form>
@@ -16,6 +19,7 @@ const CreateForm = ({ values, touched, errors, status }) => {
         {touched.name && errors.name && (
           <p>{errors.name}</p>
         )}
+        <p></p>
         <Field
         type='email'
         name='email'
@@ -24,6 +28,7 @@ const CreateForm = ({ values, touched, errors, status }) => {
         {touched.email && errors.email && (
           <p>{errors.email}</p>
         )}
+        <p></p>
         <Field
         type='password'
         name='password'
@@ -32,6 +37,7 @@ const CreateForm = ({ values, touched, errors, status }) => {
         {touched.password && errors.password && (
           <p>{errors.password}</p>
         )}
+        <p></p>
         <Field
         type='checkbox'
         name='terms'
@@ -39,6 +45,14 @@ const CreateForm = ({ values, touched, errors, status }) => {
         />
         <button type='submit'>Submit</button>
       </Form>
+      {users.map(user => (
+        <ul key={user.id}>
+          <li>Name: {user.name}</li>
+          <li>Email: {user.email}</li>
+          <li>Password: {user.passowrd}</li>
+          <li>Terms: {user.terms}</li>
+        </ul>
+      ))}
     </div>
   )
 }
@@ -56,7 +70,12 @@ const FormikCreateForm = withFormik({
     name: Yup.string().required('Please enter a name'),
     email: Yup.string().required('Please enter a valid e-mail'),
     password: Yup.string().required('Please enter a valid password'),
-  })
+  }),
+  handleSubmit(values, {setStatus}) {
+    axios.post('https://reqres.in/api/users/', values)
+    .then(res => {setStatus(res.data); })
+    .catch(err => console.log(err.response));
+  }
 })(CreateForm);
 
 export default FormikCreateForm;
