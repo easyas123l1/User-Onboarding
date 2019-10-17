@@ -15,6 +15,7 @@ const CreateForm = ({ values, touched, errors, status }) => {
         type='text'
         name='name'
         placeholder='name' 
+        value={values.name}
         />
         {touched.name && errors.name && (
           <p>{errors.name}</p>
@@ -50,7 +51,6 @@ const CreateForm = ({ values, touched, errors, status }) => {
           <li>Name: {user.name}</li>
           <li>Email: {user.email}</li>
           <li>Password: {user.passowrd}</li>
-          <li>Terms: {user.terms}</li>
         </ul>
       ))}
     </div>
@@ -71,11 +71,12 @@ const FormikCreateForm = withFormik({
     email: Yup.string().required('Please enter a valid e-mail'),
     password: Yup.string().required('Please enter a valid password'),
   }),
-  handleSubmit(values, {setStatus}) {
+  handleSubmit(values, {setStatus, resetForm}) {
     axios.post('https://reqres.in/api/users/', values)
     .then(res => {setStatus(res.data); })
     .catch(err => console.log(err.response));
-  }
+    resetForm();
+  },
 })(CreateForm);
 
 export default FormikCreateForm;
